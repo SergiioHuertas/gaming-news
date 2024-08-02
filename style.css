@@ -112,3 +112,20 @@ button:focus-visible {
 .card-new:hover {
   background: linear-gradient(135deg, #010309, #15b915);
 }
+
+.tags-menu {
+  display: flex;
+  justify-content: center;
+  margin: 1em 0;
+}
+
+.tag {
+  background-color: #646cff;
+  color: #fff;
+  padding: 0.2em 0.5em;
+  border-radius: 4px;
+  font-size: 0.8em;
+  margin-right: 0.5em;
+
+  display: inline-block;
+}
