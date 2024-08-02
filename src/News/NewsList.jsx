@@ -1,40 +1,72 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import Constants from '../common/const';
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale'
+import { es } from 'date-fns/locale';
+import './style.css';
 
 export const NewsList = () => {
     const [articles, setArticles] = useState([]);
-    const [results, setResults] = useState(Constants.resultsPerPage);
+    const [page, setPage] = useState(1);
     const [totalResults, setTotalResults] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
+    const observerRef = useRef();
 
-    const fetchArticles = async () => {
+    const fetchArticles = async (pageNum) => {
+        setIsLoading(true);
         try {
-            const response = await axios.get(`${Constants.API_URL}?sortBy=publishedAt&pageSize=${results}`, {
+            const response = await axios.get(`${Constants.API_URL}?sortBy=publishedAt&pageSize=${Constants.resultsPerPage}&page=${pageNum}`, {
                 params: {
                     q: Constants.searchFor,
                     language: Constants.language,
                     apiKey: import.meta.env.VITE_API_URL
                 }
             });
-            setArticles(response.data.articles);
+
+            setArticles(prevArticles => pageNum === 1 ? response.data.articles : [...prevArticles, ...response.data.articles]);
             setTotalResults(response.data.totalResults);
         } catch (error) {
             console.error('Error fetching the news articles:', error);
+        }finally {
+            setIsLoading(false);
         }
     };
 
+    const handleObserver = useCallback((entries) => {
+        const target = entries[0];
+        if (target.isIntersecting && articles.length < totalResults) {
+            setPage(prevPage => prevPage + 1);
+        }
+    }, [articles.length, totalResults]);
+
     useEffect(() => {
-        fetchArticles();
-    }, [results]);
+        fetchArticles(page);
+    }, [page]);
+
+    useEffect(() => {
+        const options = {
+            root: null,
+            rootMargin: "20px",
+            threshold: 0.5
+        };
+
+        observerRef.current = new IntersectionObserver(handleObserver, options);
+        const target = document.querySelector('#load-more-trigger');
+        if (target) observerRef.current.observe(target);
+
+        return () => {
+            if (observerRef.current && target) {
+                observerRef.current.unobserve(target);
+            }
+        };
+    }, [handleObserver]);
 
     return (
         <div>
             <h1>Noticias de Videojuegos</h1>
+            {isLoading && <p>Cargando...</p>}
             <ul>
-                {articles.map((article, index) => { 
-                    return (
+                {articles.map((article, index) => (
                     <div className={"card-new"} onClick={() => window.open(article.url)} key={index}>
                         <div className='tags-menu'>
                             <div className='tag'>{article.source?.name}</div>
@@ -44,13 +76,10 @@ export const NewsList = () => {
                         <img className={"new-img"} src={article.urlToImage} alt={article.title} width={500} />
                         <p className={"new-description"}>{article.description}</p>
                     </div>
-                )}
-                )}
+                ))}
             </ul>
 
-            {results < totalResults && 
-              <button onClick={() => setResults(results + Constants.resultsPerPage)}>Cargar más</button>
-            }
+            <div id="load-more-trigger"></div>
         </div>
     );
 };

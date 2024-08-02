@@ -96,36 +96,3 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
-
-.card-new {
-  border-radius: 10px;
-  padding: 2em;
-  margin: 2em;
-  background: linear-gradient(135deg, #0c111e, #b3b6af);
-
-  cursor: pointer;
-}
-.card-new:hover *{
-  transform: scale(1.03);
-}
-
-.card-new:hover {
-  background: linear-gradient(135deg, #010309, #15b915);
-}
-
-.tags-menu {
-  display: flex;
-  justify-content: center;
-  margin: 1em 0;
-}
-
-.tag {
-  background-color: #646cff;
-  color: #fff;
-  padding: 0.2em 0.5em;
-  border-radius: 4px;
-  font-size: 0.8em;
-  margin-right: 0.5em;
-
-  display: inline-block;
-}
