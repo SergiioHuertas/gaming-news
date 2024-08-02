@@ -28,7 +28,7 @@ export const NewsList = () => {
             setTotalResults(response.data.totalResults);
         } catch (error) {
             console.error('Error fetching the news articles:', error);
-        }finally {
+        } finally {
             setIsLoading(false);
         }
     };
