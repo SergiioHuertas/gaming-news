@@ -16,11 +16,12 @@ export const NewsList = () => {
     const fetchArticles = async (pageNum) => {
         setIsLoading(true);
         try {
-            const response = await axios.get(`${Constants.API_URL}?sortBy=publishedAt&pageSize=${Constants.resultsPerPage}&page=${pageNum}`, {
+            const response = await axios.get(Constants.API_URL, {
                 params: {
                     q: Constants.searchFor,
                     language: Constants.language,
-                    apiKey: import.meta.env.VITE_API_URL
+                    page: pageNum,
+                    pageSize: Constants.pageSize,
                 }
             });
 
